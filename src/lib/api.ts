@@ -1,4 +1,4 @@
-const API_BASE = "";
+const API_BASE = "https://finda.pp.ua";
 
 interface ApiResponse<T> {
   data: T;
