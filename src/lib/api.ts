@@ -229,6 +229,59 @@ class ApiClient {
     });
   }
 
+  // Master Dashboard
+  async getMasterDashboard() {
+    return this.request<any>('/api/master/dashboard');
+  }
+
+  async updateMasterProfile(data: { name?: string; description?: string; phone?: string; coverImage?: string; countryOfOrigin?: string; cityId?: string }) {
+    return this.request<any>('/api/master/dashboard/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async addMasterPortfolio(data: { imageUrl: string; caption?: string; sortOrder?: number }) {
+    return this.request<any>('/api/master/dashboard/portfolio', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async removeMasterPortfolio(id: string) {
+    return this.request<any>(`/api/master/dashboard/portfolio/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async addMasterCertificate(data: { title: string; imageUrl?: string; issuedBy?: string }) {
+    return this.request<any>('/api/master/dashboard/certificates', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async removeMasterCertificate(id: string) {
+    return this.request<any>(`/api/master/dashboard/certificates/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getMasterWorkingHours() {
+    return this.request<any>('/api/master/dashboard/working-hours');
+  }
+
+  async setMasterWorkingHour(data: { dayOfWeek: number; startTime: string; endTime: string; isActive?: boolean }) {
+    return this.request<any>('/api/master/dashboard/working-hours', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getMasterBookings() {
+    return this.request<any>('/api/master/dashboard/bookings');
+  }
+
   // Health
   async health() {
     return this.request<any>("/api/health");
