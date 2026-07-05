@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,6 +18,12 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    if (mode === "register" && password !== confirmPassword) {
+      setError("Паролі не збігаються");
+      setLoading(false);
+      return;
+    }
 
     try {
       if (mode === "login") {
@@ -88,6 +95,18 @@ export default function LoginPage() {
             className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[var(--accent)] transition-colors"
           />
 
+          {mode === "register" && (
+            <input
+              type="password"
+              placeholder="Повторіть пароль"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-4 py-3.5 text-sm outline-none focus:border-[var(--accent)] transition-colors"
+            />
+          )}
+
           <button
             type="submit"
             disabled={loading}
@@ -104,7 +123,7 @@ export default function LoginPage() {
         <p className="text-xs text-center text-[var(--text-secondary)] mt-4">
           {mode === "login" ? "Немає акаунта? " : "Вже є акаунт? "}
           <button
-            onClick={() => setMode(mode === "login" ? "register" : "login")}
+            onClick={() => { setMode(mode === "login" ? "register" : "login"); setError(null); setConfirmPassword(""); }}
             className="text-[var(--accent-dark)] font-medium hover:underline"
           >
             {mode === "login" ? "Зареєструватись" : "Увійти"}
