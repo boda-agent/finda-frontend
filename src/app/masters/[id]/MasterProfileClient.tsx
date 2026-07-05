@@ -205,9 +205,12 @@ export default function MasterProfileClient({ id }: { id: string }) {
 
         {/* CTA */}
         <div className="mt-8 sticky bottom-20 md:bottom-4 z-10">
-          <button className="w-full bg-gradient-to-r from-violet-600 to-pink-600 text-white font-bold text-sm py-4 rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all active:scale-[0.98]">
-            💬 Написати {master.name.split(' ')[0]}
-          </button>
+          <Link
+            href={`/masters/${master.id}/book`}
+            className="block w-full bg-gradient-to-r from-violet-600 to-pink-600 text-white font-bold text-sm py-4 rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all active:scale-[0.98] text-center"
+          >
+            ✨ Записатися до {master.name.split(' ')[0]}
+          </Link>
         </div>
       </div>
     </AppLayout>

@@ -159,6 +159,36 @@ class ApiClient {
     });
   }
 
+  // Bookings
+  async createBooking(data: { masterId: string; serviceId: string; date: string; startTime: string; notes?: string }) {
+    return this.request<any>("/api/bookings", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getBookings() {
+    return this.request<any[]>("/api/bookings");
+  }
+
+  async updateBookingStatus(id: string, status: string) {
+    return this.request<any>(`/api/bookings/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async addReview(bookingId: string, rating: number, text?: string) {
+    return this.request<any>(`/api/bookings/${bookingId}/review`, {
+      method: "POST",
+      body: JSON.stringify({ rating, text }),
+    });
+  }
+
+  async getMasterSlots(masterId: string, date: string) {
+    return this.request<any>(`/api/masters/${masterId}/slots?date=${date}`);
+  }
+
   // Health
   async health() {
     return this.request<any>("/api/health");
