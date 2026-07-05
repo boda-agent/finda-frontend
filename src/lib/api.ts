@@ -197,6 +197,38 @@ class ApiClient {
     });
   }
 
+  // Admin
+  async getAdminAnalytics() {
+    return this.request<any>('/api/admin/analytics');
+  }
+
+  async getAdminUsers(page?: number, limit?: number) {
+    const params = new URLSearchParams();
+    if (page) params.set('page', String(page));
+    if (limit) params.set('limit', String(limit));
+    const query = params.toString();
+    return this.request<any>(`/api/admin/users${query ? `?${query}` : ''}`);
+  }
+
+  async updateAdminUser(id: string, data: { role?: string; name?: string }) {
+    return this.request<any>(`/api/admin/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getAdminVerifications(status?: string) {
+    const query = status ? `?status=${status}` : '';
+    return this.request<any>(`/api/admin/verifications${query}`);
+  }
+
+  async reviewVerification(id: string, status: string, notes?: string) {
+    return this.request<any>(`/api/admin/verifications/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status, notes }),
+    });
+  }
+
   // Health
   async health() {
     return this.request<any>("/api/health");
