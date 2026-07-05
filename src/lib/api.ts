@@ -1,4 +1,4 @@
-const API_BASE = "http://217.160.244.186";
+const API_BASE = "";
 
 interface ApiResponse<T> {
   data: T;
