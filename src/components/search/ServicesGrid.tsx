@@ -1,37 +1,32 @@
 "use client";
 
-import { POPULAR_SERVICES } from "@/types";
+import Link from "next/link";
+
+const CATEGORIES = [
+  { slug: 'manicure', icon: '💅', label: 'Манікюр', color: 'from-pink-500 to-rose-500' },
+  { slug: 'hair', icon: '💇', label: 'Волосся', color: 'from-amber-500 to-orange-500' },
+  { slug: 'lashes', icon: '👁️', label: 'Вії', color: 'from-violet-500 to-purple-500' },
+  { slug: 'makeup', icon: '💄', label: 'Макіяж', color: 'from-red-500 to-pink-500' },
+  { slug: 'massage', icon: '💆', label: 'Масаж', color: 'from-teal-500 to-cyan-500' },
+  { slug: 'skincare', icon: '🧴', label: 'Шкіра', color: 'from-emerald-500 to-green-500' },
+  { slug: 'brows', icon: '✨', label: 'Брови', color: 'from-indigo-500 to-blue-500' },
+  { slug: 'spa', icon: '🧖', label: 'Спа', color: 'from-fuchsia-500 to-pink-500' },
+];
 
 export default function ServicesGrid() {
   return (
-    <div>
-      <div className="grid grid-cols-4 gap-2 mb-5">
-        {POPULAR_SERVICES.map((svc) => (
-          <button
-            key={svc.id}
-            className="flex flex-col items-center gap-1 py-3 px-1 rounded-xl bg-[var(--bg-card)] border border-[var(--border-light)] hover:border-[var(--accent)] transition-colors cursor-pointer"
-          >
-            <span className="text-2xl">{svc.icon}</span>
-            <span className="text-[10px] font-medium text-[var(--text-secondary)] leading-tight text-center">
-              {svc.label}
-            </span>
-          </button>
-        ))}
-      </div>
-
-      <p className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2.5">
-        Країни
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {["Україна", "Польща", "Узбекистан", "Вірменія", "Казахстан", "Туреччина"].map((country) => (
-          <span
-            key={country}
-            className="text-xs font-medium bg-white py-1.5 px-3 rounded-full border border-[var(--border)] text-[var(--text-secondary)] cursor-pointer hover:border-[var(--accent)] transition-colors"
-          >
-            {country === "Україна" ? "🇺🇦" : country === "Польща" ? "🇵🇱" : country === "Узбекистан" ? "🇺🇿" : country === "Вірменія" ? "🇦🇲" : country === "Казахстан" ? "🇰🇿" : "🇹🇷"} {country}
+    <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
+      {CATEGORIES.map((cat) => (
+        <Link key={cat.slug} href={`/catalog`}
+          className="group flex flex-col items-center gap-2 py-4 px-2 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] hover:shadow-lg transition-all cursor-pointer">
+          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center text-xl group-hover:scale-110 transition-transform shadow-sm`}>
+            {cat.icon}
+          </div>
+          <span className="text-[11px] font-semibold text-[var(--text-secondary)] group-hover:text-[var(--text)] transition-colors text-center leading-tight">
+            {cat.label}
           </span>
-        ))}
-      </div>
+        </Link>
+      ))}
     </div>
   );
 }

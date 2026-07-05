@@ -2,171 +2,171 @@
 
 import { useState, useEffect } from "react";
 import AppLayout from "@/components/layout/AppLayout";
-import { POPULAR_SERVICES, LANGUAGES } from "@/types";
 import Link from "next/link";
 import { api } from "@/lib/api";
 
 interface Master {
   id: string;
   name: string;
-  city?: { name: string };
-  countryOfOrigin?: string;
-  isVerified?: boolean;
   description?: string;
-  services?: { name: string; price: number }[];
+  coverImage?: string;
+  isVerified?: boolean;
+  city?: { name: string; country?: { name: string; flagEmoji?: string } };
+  languages?: { language: { name: string; code: string } }[];
+  reviews?: { rating: number }[];
+  portfolio?: { imageUrl: string }[];
 }
 
 export default function CatalogPage() {
-  const [showFilters, setShowFilters] = useState(false);
-  const [selectedLang, setSelectedLang] = useState<string[]>([]);
-  const [selectedService, setSelectedService] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [masters, setMasters] = useState<Master[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    loadMasters();
-  }, []);
+  useEffect(() => { loadMasters(); }, []);
 
   async function loadMasters() {
     try {
       const data = await api.getMasters();
       setMasters(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Failed to load masters:", err);
-      setMasters([]);
-    } finally {
-      setLoading(false);
-    }
+    } catch { setMasters([]); }
+    finally { setLoading(false); }
   }
 
-  const toggleLang = (lang: string) => {
-    setSelectedLang((prev) =>
-      prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang]
-    );
-  };
+  const cities = [...new Set(masters.map(m => m.city?.name).filter(Boolean))] as string[];
 
-  const filteredMasters = masters.filter((m) => {
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      return (
-        m.name.toLowerCase().includes(q) ||
-        m.description?.toLowerCase().includes(q)
-      );
+  const filtered = masters.filter(m => {
+    if (search) {
+      const q = search.toLowerCase();
+      if (!m.name.toLowerCase().includes(q) && !m.description?.toLowerCase().includes(q)) return false;
     }
+    if (selectedCity && m.city?.name !== selectedCity) return false;
     return true;
   });
 
+  function getAvgRating(m: Master) {
+    if (!m.reviews?.length) return 0;
+    return m.reviews.reduce((a, r) => a + r.rating, 0) / m.reviews.length;
+  }
+
   return (
     <AppLayout>
-      <div className="max-w-5xl mx-auto px-4 py-6">
-        {/* Search bar */}
-        <div className="flex items-center gap-3 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-4 py-3.5 mb-5">
-          <span className="text-lg opacity-50">🔍</span>
-          <input
-            type="text"
-            placeholder="Пошук майстра, послуги..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 text-sm bg-transparent outline-none border-none text-[var(--text)] placeholder:text-[var(--text-tertiary)]"
-          />
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors ${
-              showFilters
-                ? "bg-[var(--accent)] text-[var(--text)]"
-                : "bg-[var(--bg)] text-[var(--text-secondary)]"
-            }`}
-          >
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-[var(--text)] mb-2">Каталог майстрів</h1>
+          <p className="text-sm text-[var(--text-tertiary)]">{filtered.length} спеціалістів готові до роботи</p>
+        </div>
+
+        {/* Search & Filters */}
+        <div className="flex flex-col md:flex-row gap-3 mb-8">
+          <div className="flex-1 relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]">🔍</span>
+            <input
+              type="text" placeholder="Пошук майстра, послуги..."
+              value={search} onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/10 transition-all"
+            />
+          </div>
+          <button onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-2 px-5 py-3.5 rounded-xl text-sm font-medium border transition-all ${showFilters ? 'bg-[var(--accent)] text-white border-[var(--accent)]' : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--accent)]'}`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M7 12h10M10 18h4"/></svg>
             Фільтри
           </button>
         </div>
 
-        {/* Filters */}
+        {/* Filter chips */}
         {showFilters && (
-          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4 mb-5">
-            <div className="mb-4">
-              <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2">Послуга</p>
-              <div className="flex flex-wrap gap-2">
-                {POPULAR_SERVICES.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => setSelectedService(selectedService === s.id ? "" : s.id)}
-                    className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${
-                      selectedService === s.id
-                        ? "bg-[var(--accent)] text-[var(--text)]"
-                        : "bg-[var(--bg)] text-[var(--text-secondary)]"
-                    }`}
-                  >
-                    {s.icon} {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2">Мова</p>
-              <div className="flex flex-wrap gap-2">
-                {LANGUAGES.map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => toggleLang(lang)}
-                    className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${
-                      selectedLang.includes(lang)
-                        ? "bg-[var(--accent)] text-[var(--text)]"
-                        : "bg-[var(--bg)] text-[var(--text-secondary)]"
-                    }`}
-                  >
-                    {lang}
-                  </button>
-                ))}
-              </div>
-            </div>
+          <div className="flex flex-wrap gap-2 mb-6 animate-fadeIn">
+            <button onClick={() => setSelectedCity("")}
+              className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${!selectedCity ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--accent)]'}`}>
+              Всі міста
+            </button>
+            {cities.map(city => (
+              <button key={city} onClick={() => setSelectedCity(city === selectedCity ? "" : city)}
+                className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${city === selectedCity ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--accent)]'}`}>
+                {city}
+              </button>
+            ))}
           </div>
         )}
 
-        {/* Results */}
+        {/* Grid */}
         {loading ? (
-          <div className="text-center py-12">
-            <span className="inline-block w-6 h-6 border-2 border-[var(--border)] border-t-[var(--accent)] rounded-full animate-spin" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[1,2,3,4,5,6].map(i => (
+              <div key={i} className="bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border)]">
+                <div className="h-48 shimmer" />
+                <div className="p-5 space-y-3">
+                  <div className="h-4 w-3/4 shimmer rounded" />
+                  <div className="h-3 w-1/2 shimmer rounded" />
+                </div>
+              </div>
+            ))}
           </div>
-        ) : filteredMasters.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-4xl mb-3">🔍</p>
-            <p className="text-sm text-[var(--text-secondary)]">Майстрів не знайдено</p>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="text-5xl mb-4">🔍</div>
+            <h3 className="text-lg font-bold text-[var(--text)] mb-2">Нічого не знайдено</h3>
+            <p className="text-sm text-[var(--text-tertiary)]">Спробуйте змінити фільтри або пошуковий запит</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredMasters.map((master) => (
-              <Link key={master.id} href={`/masters/${master.id}`}>
-                <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4 hover:shadow-sm transition-shadow cursor-pointer">
-                  <div className="flex items-start gap-3">
-                    <div className="w-12 h-12 rounded-full bg-[var(--accent)] flex items-center justify-center text-lg font-bold text-[var(--text)]">
-                      {master.name.charAt(0)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-semibold truncate">{master.name}</h3>
-                        {master.isVerified && <span className="text-green-500 text-xs">✓</span>}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filtered.map((master) => {
+              const rating = getAvgRating(master);
+              const langs = master.languages?.map(l => l.language.code.toUpperCase()).slice(0, 3) || [];
+              return (
+                <Link key={master.id} href={`/masters/${master.id}`}
+                  className="group bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border)] card-hover">
+                  {/* Cover */}
+                  <div className="relative h-48 bg-gradient-to-br from-violet-100 to-pink-100 overflow-hidden">
+                    {master.coverImage ? (
+                      <img src={master.coverImage} alt={master.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">👩</div>
+                    )}
+                    {master.isVerified && (
+                      <div className="absolute top-3 right-3 glass rounded-full px-3 py-1 flex items-center gap-1">
+                        <span className="text-green-500 text-xs">✓</span>
+                        <span className="text-[10px] font-semibold text-[var(--text)]">Перевірений</span>
                       </div>
-                      {master.city && (
-                        <p className="text-xs text-[var(--text-secondary)]">{master.city.name}</p>
-                      )}
-                      {master.description && (
-                        <p className="text-xs text-[var(--text-tertiary)] mt-1 line-clamp-2">
-                          {master.description}
-                        </p>
-                      )}
-                      {master.services && master.services.length > 0 && (
-                        <p className="text-xs font-medium text-[var(--accent-dark)] mt-2">
-                          від {Math.min(...master.services.map((s) => s.price))} ₴
-                        </p>
-                      )}
+                    )}
+                    {rating > 0 && (
+                      <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+                        <span className="text-yellow-400 text-xs">★</span>
+                        <span className="text-xs font-bold text-white">{rating.toFixed(1)}</span>
+                        <span className="text-[10px] text-white/60">({master.reviews?.length})</span>
+                      </div>
+                    )}
+                  </div>
+                  {/* Info */}
+                  <div className="p-5">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h3 className="font-bold text-[var(--text)] group-hover:text-[var(--accent)] transition-colors">{master.name}</h3>
+                        {master.city && (
+                          <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
+                            {master.city.country?.flagEmoji} {master.city.name}{master.city.country?.name && `, ${master.city.country.name}`}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {master.description && (
+                      <p className="text-xs text-[var(--text-secondary)] mb-3 line-clamp-2 leading-relaxed">{master.description}</p>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-1.5">
+                        {langs.map(l => (
+                          <span key={l} className="text-[10px] font-semibold bg-[var(--accent-light)] text-[var(--accent)] px-2 py-0.5 rounded-md">{l}</span>
+                        ))}
+                      </div>
+                      <span className="text-xs font-semibold text-[var(--accent)] group-hover:translate-x-1 transition-transform inline-block">Дивитись →</span>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
