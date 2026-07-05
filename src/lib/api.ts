@@ -189,6 +189,14 @@ class ApiClient {
     return this.request<any>(`/api/masters/${masterId}/slots?date=${date}`);
   }
 
+  // Profile
+  async updateProfile(data: { name?: string; phone?: string }) {
+    return this.request<any>('/api/user/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
   // Health
   async health() {
     return this.request<any>("/api/health");
