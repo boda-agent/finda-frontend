@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import Link from "next/link";
 import ServicesGrid from "@/components/search/ServicesGrid";
@@ -8,48 +9,101 @@ import { useI18n } from "@/lib/i18n";
 
 export default function HomePage() {
   const { t } = useI18n();
+  const [city, setCity] = useState("");
+  const [service, setService] = useState("");
+
+  function handleSearch() {
+    const params = new URLSearchParams();
+    if (city) params.set("city", city);
+    if (service) params.set("q", service);
+    window.location.href = `/catalog?${params.toString()}`;
+  }
 
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Hero */}
-        <section className="relative overflow-hidden rounded-3xl bg-[var(--bg-card)] border border-[var(--border)] p-8 md:p-12 mb-10">
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute top-10 right-10 w-72 h-72 bg-[var(--accent)] rounded-full blur-[100px]" />
-            <div className="absolute bottom-10 left-10 w-60 h-60 bg-[var(--accent)] rounded-full blur-[100px]" />
-          </div>
-          <div className="relative z-10 max-w-xl">
-            <div className="inline-flex items-center gap-2 bg-[var(--accent-light)] rounded-full px-4 py-1.5 mb-5">
-              <span className="w-2 h-2 bg-[var(--accent)] rounded-full pulse-dot" />
-              <span className="text-xs text-[var(--accent-dark)] font-medium">{t("home.hero_badge", { count: 150 })}</span>
-            </div>
-            <h1 className="text-3xl md:text-5xl font-extrabold text-[var(--text)] leading-[1.1] tracking-tight mb-4">
-              {t("home.hero_title")}
-              <span className="block text-[var(--accent)]">{t("home.hero_subtitle")}</span>
-            </h1>
-            <p className="text-sm md:text-base text-[var(--text-secondary)] mb-8 leading-relaxed max-w-md">
-              {t("home.hero_description")}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/catalog" className="inline-flex items-center justify-center gap-2 bg-[var(--accent)] text-white font-semibold text-sm px-6 py-3.5 rounded-xl hover:bg-[var(--accent-dark)] transition-all">
-                {t("home.cta_find")}
-              </Link>
-              <Link href="/login" className="inline-flex items-center justify-center gap-2 bg-[var(--bg-elevated)] text-[var(--text)] font-medium text-sm px-6 py-3.5 rounded-xl border border-[var(--border)] hover:border-[var(--accent)] transition-all">
-                {t("home.cta_become")}
-              </Link>
-            </div>
-          </div>
-          <div className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 flex-col gap-3">
-            {[
-              { num: "150+", label: t("home.stats_masters") },
-              { num: "8", label: t("home.stats_countries") },
-              { num: "4.8", label: t("home.stats_rating") },
-            ].map((s) => (
-              <div key={s.label} className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl px-5 py-3 text-center min-w-[100px]">
-                <div className="text-xl font-bold text-[var(--text)]">{s.num}</div>
-                <div className="text-[10px] text-[var(--text-tertiary)] uppercase tracking-wider">{s.label}</div>
+        {/* Hero — Split 55/45 */}
+        <section className="relative rounded-3xl bg-[var(--bg-card)] border border-[var(--border)] overflow-hidden mb-10">
+          <div className="flex flex-col md:flex-row">
+            {/* Left — Text + Search */}
+            <div className="flex-1 p-8 md:p-12 flex flex-col justify-center">
+              <div className="inline-flex items-center gap-2 bg-[var(--accent-light)] rounded-full px-4 py-1.5 mb-5 w-fit">
+                <span className="w-2 h-2 bg-[var(--accent)] rounded-full pulse-dot" />
+                <span className="text-xs text-[var(--accent-dark)] font-medium">110+ майстрів онлайн</span>
               </div>
-            ))}
+
+              <h1 className="text-3xl md:text-[3rem] font-extrabold text-[var(--text)] leading-[1.1] tracking-tight mb-4">
+                Знайди свого
+                <span className="block text-[var(--accent)]">beauty-майстра</span>
+              </h1>
+
+              <p className="text-sm md:text-base text-[var(--text-secondary)] mb-8 leading-relaxed max-w-md">
+                Тисячі перевірених спеціалістів поруч. Шукай за мовою, послугою та локацією. Бронюй в один клік.
+              </p>
+
+              {/* SearchBar */}
+              <div
+                role="search"
+                aria-label="Пошук б'юті-послуг"
+                className="flex flex-col sm:flex-row items-stretch bg-[var(--bg)] border border-[var(--border)] rounded-xl overflow-hidden hover:border-[var(--accent)] hover:shadow-md transition-all mb-6"
+              >
+                <div className="flex-1 flex items-center gap-2 px-4 py-3.5 border-b sm:border-b-0 sm:border-r border-[var(--border)]">
+                  <span className="text-[var(--text-tertiary)]">📍</span>
+                  <input
+                    type="text"
+                    placeholder="Місто"
+                    aria-label="Місто"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    className="flex-1 bg-transparent text-sm text-[var(--text)] outline-none placeholder:text-[var(--text-tertiary)]"
+                  />
+                </div>
+                <div className="flex-1 flex items-center gap-2 px-4 py-3.5">
+                  <span className="text-[var(--text-tertiary)]">✂️</span>
+                  <input
+                    type="text"
+                    placeholder="Стрижка, манікюр…"
+                    aria-label="Послуга"
+                    value={service}
+                    onChange={(e) => setService(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    className="flex-1 bg-transparent text-sm text-[var(--text)] outline-none placeholder:text-[var(--text-tertiary)]"
+                  />
+                </div>
+                <button
+                  onClick={handleSearch}
+                  aria-label="Знайти майстрів"
+                  className="bg-[var(--accent)] text-white font-semibold text-sm px-6 py-3.5 hover:bg-[var(--accent-dark)] transition-all active:scale-[0.98]"
+                >
+                  Найти →
+                </button>
+              </div>
+
+              {/* Social proof */}
+              <div className="flex items-center gap-3 text-sm text-[var(--text-tertiary)]">
+                <span className="flex items-center gap-1">
+                  <span className="text-yellow-400">★</span> 4.8
+                </span>
+                <span>·</span>
+                <span>2000+ відгуків</span>
+                <span>·</span>
+                <span>110+ майстрів</span>
+              </div>
+            </div>
+
+            {/* Right — Photo */}
+            <div className="hidden md:block md:w-[45%] relative">
+              <div className="absolute inset-0">
+                <img
+                  src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800"
+                  alt="Майстер робить клієнту манікюр у салоні краси"
+                  loading="eager"
+                  fetchPriority="high"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
           </div>
         </section>
 
@@ -61,7 +115,7 @@ export default function HomePage() {
               <p className="text-xs text-[var(--text-tertiary)] mt-0.5">{t("home.categories_subtitle")}</p>
             </div>
             <Link href="/catalog" className="text-xs font-semibold text-[var(--accent)] hover:text-[var(--accent-dark)] transition-colors">
-              {t("home.categories_all")}
+              {t("home.all_services")}
             </Link>
           </div>
           <ServicesGrid />
@@ -75,7 +129,7 @@ export default function HomePage() {
               <p className="text-xs text-[var(--text-tertiary)] mt-0.5">{t("home.top_masters_subtitle")}</p>
             </div>
             <Link href="/catalog" className="text-xs font-semibold text-[var(--accent)] hover:text-[var(--accent-dark)] transition-colors">
-              {t("home.top_masters_all")}
+              {t("home.all")}
             </Link>
           </div>
           <SpecialistCarousel />
@@ -84,14 +138,27 @@ export default function HomePage() {
         {/* Language Banner */}
         <section className="mb-10 relative overflow-hidden rounded-2xl bg-[var(--accent-light)] border border-[var(--accent)]/20 p-6 md:p-8">
           <div className="relative z-10">
-            <h3 className="text-xl font-bold text-[var(--text)] mb-2">{t("home.language_title")}</h3>
+            <h3 className="text-xl font-bold text-[var(--text)] mb-2">🗣️ Майстер твоєю мовою</h3>
             <p className="text-sm text-[var(--text-secondary)] mb-5 max-w-md">
-              {t("home.language_description")}
+              Знаходьте спеціалістів, які говорять українською, російською, англійською та іншими мовами
             </p>
             <div className="flex flex-wrap gap-2">
-              {["🇺🇦 Українська", "🇬🇧 English", "🇷🇺 Русский", "🇵🇱 Polski", "🇩🇪 Deutsch", "🇫🇷 Français", "🇮🇱 עברית", "🇹🇷 Türkçe"].map((lang) => (
-                <Link key={lang} href="/catalog" className="text-xs font-medium bg-white text-[var(--text)] py-2 px-4 rounded-full hover:bg-[var(--accent)] hover:text-white transition-all border border-[var(--border)]">
-                  {lang}
+              {[
+                { flag: "🇺🇦", name: "Українська" },
+                { flag: "🇬🇧", name: "English" },
+                { flag: "🇷🇺", name: "Русский" },
+                { flag: "🇵🇱", name: "Polski" },
+                { flag: "🇩🇪", name: "Deutsch" },
+                { flag: "🇫🇷", name: "Français" },
+                { flag: "🇹🇷", name: "Türkçe" },
+                { flag: "🇰🇿", name: "Қазақша" },
+              ].map((l) => (
+                <Link
+                  key={l.name}
+                  href={`/catalog?lang=${l.name}`}
+                  className="text-xs font-medium bg-white text-[var(--text)] py-2 px-4 rounded-full hover:bg-[var(--accent)] hover:text-white transition-all border border-[var(--border)]"
+                >
+                  {l.flag} {l.name}
                 </Link>
               ))}
             </div>
@@ -100,18 +167,18 @@ export default function HomePage() {
 
         {/* How it works */}
         <section className="mb-10">
-          <h2 className="text-lg font-bold text-[var(--text)] mb-6 text-center">{t("home.how_it_works")}</h2>
+          <h2 className="text-lg font-bold text-[var(--text)] mb-6 text-center">Як це працює</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
-              { icon: "🔍", title: t("home.step_find"), desc: t("home.step_find_desc") },
-              { icon: "💬", title: t("home.step_contact"), desc: t("home.step_contact_desc") },
-              { icon: "✨", title: t("home.step_enjoy"), desc: t("home.step_enjoy_desc") },
-            ].map((step, i) => (
-              <div key={i} className="relative bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 text-center card-hover">
-                <div className="text-3xl mb-3">{step.icon}</div>
-                <div className="text-xs text-[var(--accent)] font-bold uppercase tracking-wider mb-2">Крок {i + 1}</div>
-                <h3 className="font-bold text-[var(--text)] mb-1">{step.title}</h3>
-                <p className="text-xs text-[var(--text-tertiary)]">{step.desc}</p>
+              { icon: "🔍", step: "1", title: "Знайдіть", desc: "Оберіть послугу, місто та мову майстра" },
+              { icon: "💬", step: "2", title: "Напишіть", desc: "Зв'яжіться напряму та домовтеся про візит" },
+              { icon: "✨", step: "3", title: "Насолоджуйтесь", desc: "Отримайте якісний сервіс від професіонала" },
+            ].map((item) => (
+              <div key={item.step} className="relative bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 text-center card-hover">
+                <div className="text-3xl mb-3">{item.icon}</div>
+                <div className="text-xs text-[var(--accent)] font-bold uppercase tracking-wider mb-2">Крок {item.step}</div>
+                <h3 className="font-bold text-[var(--text)] mb-1">{item.title}</h3>
+                <p className="text-xs text-[var(--text-tertiary)]">{item.desc}</p>
               </div>
             ))}
           </div>
