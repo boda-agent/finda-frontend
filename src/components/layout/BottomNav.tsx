@@ -2,20 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const navItems = [
-  { href: "/", label: "Пошук", icon: "🔍" },
-  { href: "/favorites", label: "Обране", icon: "❤️" },
-  { href: "/appointments", label: "Записи", icon: "📅" },
-  { href: "/profile", label: "Профіль", icon: "👤" },
-];
+import { useI18n } from "@/lib/i18n";
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { t } = useI18n();
+
+  const navItems = [
+    { href: "/", label: t("nav.catalog"), icon: "🔍" },
+    { href: "/favorites", label: t("nav.favorites"), icon: "❤️" },
+    { href: "/bookings", label: t("nav.bookings"), icon: "📋" },
+    { href: "/profile", label: t("nav.profile"), icon: "👤" },
+  ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--bg-card)] border-t border-[var(--border-light)] md:hidden">
-      <div className="flex justify-around py-2">
+      <div className="flex justify-around py-2 pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const isActive =
             item.href === "/"

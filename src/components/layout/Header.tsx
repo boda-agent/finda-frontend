@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { getCurrentUser, logout, type User } from "@/lib/auth";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useI18n } from "@/lib/i18n";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     setUser(getCurrentUser());
@@ -16,6 +18,14 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const navLinks = [
+    { href: '/', label: t('nav.home'), icon: '🏠' },
+    { href: '/catalog', label: t('nav.catalog'), icon: '🔍' },
+    { href: '/bookings', label: t('nav.bookings'), icon: '📋' },
+    { href: '/favorites', label: t('nav.favorites'), icon: '❤️' },
+    { href: '/profile', label: t('nav.profile'), icon: '👤' },
+  ];
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'glass shadow-sm border-b border-[var(--border)]/50' : 'bg-transparent'}`}>
@@ -25,10 +35,7 @@ export default function Header() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
-          {[
-            { href: '/', label: 'Головна' },
-            { href: '/catalog', label: 'Каталог' },
-          ].map(link => (
+          {navLinks.slice(0, 3).map(link => (
             <Link key={link.href} href={link.href}
               className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text)] px-4 py-2 rounded-lg hover:bg-[var(--bg-elevated)] transition-all">
               {link.label}
@@ -43,45 +50,48 @@ export default function Header() {
               <span className="text-sm text-[var(--text-secondary)]">{user.name || user.email?.split('@')[0]}</span>
               <button onClick={() => { logout(); setUser(null); }}
                 className="text-sm font-medium text-[var(--text-tertiary)] hover:text-[var(--text)] px-4 py-2 rounded-lg hover:bg-[var(--bg-elevated)] transition-all">
-                Вийти
+                {t('nav.logout')}
               </button>
             </>
           ) : (
             <>
-              <Link href="/login" className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text)] px-4 py-2 rounded-lg hover:bg-[var(--bg-elevated)] transition-all">Увійти</Link>
-              <Link href="/login" className="text-sm font-semibold bg-[var(--text)] text-white px-5 py-2.5 rounded-xl hover:bg-[var(--text)]/90 transition-all shadow-sm">Реєстрація</Link>
+              <Link href="/login" className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text)] px-4 py-2 rounded-lg hover:bg-[var(--bg-elevated)] transition-all">{t('nav.login')}</Link>
+              <Link href="/login" className="text-sm font-semibold bg-[var(--text)] text-white px-5 py-2.5 rounded-xl hover:bg-[var(--text)]/90 transition-all shadow-sm">{t('nav.register')}</Link>
             </>
           )}
         </div>
 
         {/* Mobile menu button */}
-        <button className="md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-[var(--bg-elevated)] transition-colors" onClick={() => setOpen(!open)}>
-          <span className={`block w-5 h-0.5 bg-[var(--text)] rounded transition-all ${open ? 'rotate-45 translate-y-2' : ''}`} />
-          <span className={`block w-5 h-0.5 bg-[var(--text)] rounded transition-all ${open ? 'opacity-0' : ''}`} />
-          <span className={`block w-5 h-0.5 bg-[var(--text)] rounded transition-all ${open ? '-rotate-45 -translate-y-2' : ''}`} />
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <LanguageSwitcher />
+          <button className="flex flex-col gap-1.5 p-2 rounded-lg hover:bg-[var(--bg-elevated)] transition-colors" onClick={() => setOpen(!open)}>
+            <span className={`block w-5 h-0.5 bg-[var(--text)] rounded transition-all ${open ? 'rotate-45 translate-y-2' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-[var(--text)] rounded transition-all ${open ? 'opacity-0' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-[var(--text)] rounded transition-all ${open ? '-rotate-45 -translate-y-2' : ''}`} />
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden glass border-t border-[var(--border)]/50 px-4 py-4">
           <nav className="flex flex-col gap-1">
-            {[
-              { href: '/', label: '🏠 Головна' },
-              { href: '/catalog', label: '🔍 Каталог' },
-            ].map(link => (
+            {navLinks.map(link => (
               <Link key={link.href} href={link.href} onClick={() => setOpen(false)}
                 className="text-sm font-medium text-[var(--text-secondary)] px-4 py-3 rounded-lg hover:bg-[var(--bg-elevated)] transition-all">
-                {link.label}
+                {link.icon} {link.label}
               </Link>
             ))}
             <div className="h-px bg-[var(--border)] my-2" />
             {user ? (
-              <button onClick={() => { logout(); setUser(null); setOpen(false); }}
-                className="text-sm font-medium text-red-500 px-4 py-3 rounded-lg text-left">Вийти</button>
+              <>
+                <div className="px-4 py-2 text-xs text-[var(--text-tertiary)]">{user.name || user.email}</div>
+                <button onClick={() => { logout(); setUser(null); setOpen(false); }}
+                  className="text-sm font-medium text-red-500 px-4 py-3 rounded-lg text-left">🚪 {t('nav.logout')}</button>
+              </>
             ) : (
               <Link href="/login" onClick={() => setOpen(false)}
-                className="text-sm font-semibold bg-[var(--text)] text-white px-4 py-3 rounded-lg text-center">Увійти / Реєстрація</Link>
+                className="text-sm font-semibold bg-[var(--accent)] text-white px-4 py-3 rounded-lg text-center">{t('nav.login')} / {t('nav.register')}</Link>
             )}
           </nav>
         </div>
