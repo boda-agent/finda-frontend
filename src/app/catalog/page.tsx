@@ -15,7 +15,8 @@ interface Master {
   isVerified?: boolean;
   lat?: number | null;
   lng?: number | null;
-  city?: { name: string; country?: { name: string; flagEmoji?: string } };
+  city?: { name: string; country?: { name: string; flagEmoji?: string; code?: string } };
+  countryOfOrigin?: string;
   languages?: { language: { name: string; code: string } }[];
   reviews?: { rating: number }[];
   portfolio?: { imageUrl: string }[];
@@ -28,11 +29,18 @@ export default function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [selectedMaster, setSelectedMaster] = useState<Master | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [countries, setCountries] = useState<any[]>([]);
+  const [citiesList, setCitiesList] = useState<any[]>([]);
+  const [languages, setLanguages] = useState<any[]>([]);
 
-  useEffect(() => { loadMasters(); }, []);
+  useEffect(() => { loadMasters(); loadFilters(); }, []);
 
   async function loadMasters() {
     try {
@@ -42,7 +50,24 @@ export default function CatalogPage() {
     finally { setLoading(false); }
   }
 
-  const cities = [...new Set(masters.map(m => m.city?.name).filter(Boolean))] as string[];
+  async function loadFilters() {
+    try {
+      const [cats, ctrs, cts, langs] = await Promise.all([
+        api.getCategories(),
+        api.getCountries(),
+        api.getCities(),
+        api.getLanguages(),
+      ]);
+      setCategories(Array.isArray(cats) ? cats : []);
+      setCountries(Array.isArray(ctrs) ? ctrs : []);
+      setCitiesList(Array.isArray(cts) ? cts : []);
+      setLanguages(Array.isArray(langs) ? langs : []);
+    } catch {}
+  }
+
+  const filteredCities = selectedCountry
+    ? citiesList.filter(c => c.country?.code === selectedCountry || c.countryId === selectedCountry)
+    : citiesList;
 
   const filtered = masters.filter(m => {
     if (search) {
@@ -50,6 +75,11 @@ export default function CatalogPage() {
       if (!m.name.toLowerCase().includes(q) && !m.description?.toLowerCase().includes(q)) return false;
     }
     if (selectedCity && m.city?.name !== selectedCity) return false;
+    if (selectedCountry && m.city?.country?.code !== selectedCountry && m.countryOfOrigin !== selectedCountry) return false;
+    if (selectedLanguage) {
+      const hasLang = m.languages?.some(l => l.language.code === selectedLanguage);
+      if (!hasLang) return false;
+    }
     return true;
   });
 
@@ -111,19 +141,68 @@ export default function CatalogPage() {
           </button>
         </div>
 
-        {/* Filter chips */}
+        {/* Advanced filters */}
         {showFilters && (
-          <div className="flex flex-wrap gap-2 mb-6">
-            <button onClick={() => setSelectedCity("")}
-              className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${!selectedCity ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--accent)]'}`}>
-              Всі міста
-            </button>
-            {cities.map(city => (
-              <button key={city} onClick={() => setSelectedCity(city === selectedCity ? "" : city)}
-                className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${city === selectedCity ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--accent)]'}`}>
-                {city}
-              </button>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {/* Category */}
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">Категорія</label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm outline-none focus:border-[var(--accent)] transition-all appearance-none"
+              >
+                <option value="">Всі категорії</option>
+                {categories.map(c => (
+                  <option key={c.id} value={c.slug}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Country */}
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">Країна</label>
+              <select
+                value={selectedCountry}
+                onChange={(e) => { setSelectedCountry(e.target.value); setSelectedCity(""); }}
+                className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm outline-none focus:border-[var(--accent)] transition-all appearance-none"
+              >
+                <option value="">Всі країни</option>
+                {countries.map(c => (
+                  <option key={c.code} value={c.code}>{c.flagEmoji} {c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* City */}
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">Місто</label>
+              <select
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm outline-none focus:border-[var(--accent)] transition-all appearance-none"
+              >
+                <option value="">Всі міста</option>
+                {filteredCities.map(c => (
+                  <option key={c.id} value={c.name}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Language */}
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">Мова</label>
+              <select
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+                className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm outline-none focus:border-[var(--accent)] transition-all appearance-none"
+              >
+                <option value="">Всі мови</option>
+                {languages.map(l => (
+                  <option key={l.code} value={l.code}>{l.nativeName || l.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
         )}
 
