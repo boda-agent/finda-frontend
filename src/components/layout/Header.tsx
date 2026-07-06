@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { getCurrentUser, logout, type User } from "@/lib/auth";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -36,6 +37,7 @@ export default function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
+          <LanguageSwitcher />
           {user ? (
             <>
               <span className="text-sm text-[var(--text-secondary)]">{user.name || user.email?.split('@')[0]}</span>
