@@ -4,8 +4,11 @@ import AppLayout from "@/components/layout/AppLayout";
 import Link from "next/link";
 import ServicesGrid from "@/components/search/ServicesGrid";
 import SpecialistCarousel from "@/components/master/SpecialistCarousel";
+import { useI18n } from "@/lib/i18n";
 
 export default function HomePage() {
+  const { t } = useI18n();
+
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto px-4 py-8">
@@ -18,30 +21,29 @@ export default function HomePage() {
           <div className="relative z-10 max-w-xl">
             <div className="inline-flex items-center gap-2 bg-[var(--accent-light)] rounded-full px-4 py-1.5 mb-5">
               <span className="w-2 h-2 bg-[var(--accent)] rounded-full pulse-dot" />
-              <span className="text-xs text-[var(--accent-dark)] font-medium">150+ майстрів онлайн</span>
+              <span className="text-xs text-[var(--accent-dark)] font-medium">{t("home.hero_badge", { count: 150 })}</span>
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold text-[var(--text)] leading-[1.1] tracking-tight mb-4">
-              Знайди свого
-              <span className="block text-[var(--accent)]">beauty-майстра</span>
+              {t("home.hero_title")}
+              <span className="block text-[var(--accent)]">{t("home.hero_subtitle")}</span>
             </h1>
             <p className="text-sm md:text-base text-[var(--text-secondary)] mb-8 leading-relaxed max-w-md">
-              Тисячі перевірених спеціалістів поруч. Шукай за мовою, послугою та локацією. Бронюй в один клік.
+              {t("home.hero_description")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link href="/catalog" className="inline-flex items-center justify-center gap-2 bg-[var(--accent)] text-white font-semibold text-sm px-6 py-3.5 rounded-xl hover:bg-[var(--accent-dark)] transition-all">
-                🔍 Знайти майстра
+                {t("home.cta_find")}
               </Link>
               <Link href="/login" className="inline-flex items-center justify-center gap-2 bg-[var(--bg-elevated)] text-[var(--text)] font-medium text-sm px-6 py-3.5 rounded-xl border border-[var(--border)] hover:border-[var(--accent)] transition-all">
-                Стати майстром →
+                {t("home.cta_become")}
               </Link>
             </div>
           </div>
-          {/* Floating stats */}
           <div className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 flex-col gap-3">
             {[
-              { num: '150+', label: 'Майстрів' },
-              { num: '8', label: 'Країн' },
-              { num: '4.8', label: 'Рейтинг' },
+              { num: "150+", label: t("home.stats_masters") },
+              { num: "8", label: t("home.stats_countries") },
+              { num: "4.8", label: t("home.stats_rating") },
             ].map((s) => (
               <div key={s.label} className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl px-5 py-3 text-center min-w-[100px]">
                 <div className="text-xl font-bold text-[var(--text)]">{s.num}</div>
@@ -55,11 +57,11 @@ export default function HomePage() {
         <section className="mb-10">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-lg font-bold text-[var(--text)]">Категорії</h2>
-              <p className="text-xs text-[var(--text-tertiary)] mt-0.5">Знайдіть потрібну послугу</p>
+              <h2 className="text-lg font-bold text-[var(--text)]">{t("home.categories_title")}</h2>
+              <p className="text-xs text-[var(--text-tertiary)] mt-0.5">{t("home.categories_subtitle")}</p>
             </div>
             <Link href="/catalog" className="text-xs font-semibold text-[var(--accent)] hover:text-[var(--accent-dark)] transition-colors">
-              Всі послуги →
+              {t("home.categories_all")}
             </Link>
           </div>
           <ServicesGrid />
@@ -69,11 +71,11 @@ export default function HomePage() {
         <section className="mb-10">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-lg font-bold text-[var(--text)]">Топ майстри</h2>
-              <p className="text-xs text-[var(--text-tertiary)] mt-0.5">Найкращі спеціалісти за рейтингом</p>
+              <h2 className="text-lg font-bold text-[var(--text)]">{t("home.top_masters")}</h2>
+              <p className="text-xs text-[var(--text-tertiary)] mt-0.5">{t("home.top_masters_subtitle")}</p>
             </div>
             <Link href="/catalog" className="text-xs font-semibold text-[var(--accent)] hover:text-[var(--accent-dark)] transition-colors">
-              Всі →
+              {t("home.top_masters_all")}
             </Link>
           </div>
           <SpecialistCarousel />
@@ -82,13 +84,13 @@ export default function HomePage() {
         {/* Language Banner */}
         <section className="mb-10 relative overflow-hidden rounded-2xl bg-[var(--accent-light)] border border-[var(--accent)]/20 p-6 md:p-8">
           <div className="relative z-10">
-            <h3 className="text-xl font-bold text-[var(--text)] mb-2">🗣️ Майстер твоєю мовою</h3>
+            <h3 className="text-xl font-bold text-[var(--text)] mb-2">{t("home.language_title")}</h3>
             <p className="text-sm text-[var(--text-secondary)] mb-5 max-w-md">
-              Знаходьте спеціалістів, які говорять українською, російською, англійською та іншими мовами
+              {t("home.language_description")}
             </p>
             <div className="flex flex-wrap gap-2">
-              {['🇺🇦 Українська', '🇬🇧 English', '🇷🇺 Русский', '🇵🇱 Polski', '🇩🇪 Deutsch', '🇫🇷 Français', '🇮🇱 עברית', '🇹🇷 Türkçe'].map((lang) => (
-                <Link key={lang} href={`/catalog`} className="text-xs font-medium bg-white text-[var(--text)] py-2 px-4 rounded-full hover:bg-[var(--accent)] hover:text-white transition-all border border-[var(--border)]">
+              {["🇺🇦 Українська", "🇬🇧 English", "🇷🇺 Русский", "🇵🇱 Polski", "🇩🇪 Deutsch", "🇫🇷 Français", "🇮🇱 עברית", "🇹🇷 Türkçe"].map((lang) => (
+                <Link key={lang} href="/catalog" className="text-xs font-medium bg-white text-[var(--text)] py-2 px-4 rounded-full hover:bg-[var(--accent)] hover:text-white transition-all border border-[var(--border)]">
                   {lang}
                 </Link>
               ))}
@@ -98,12 +100,12 @@ export default function HomePage() {
 
         {/* How it works */}
         <section className="mb-10">
-          <h2 className="text-lg font-bold text-[var(--text)] mb-6 text-center">Як це працює</h2>
+          <h2 className="text-lg font-bold text-[var(--text)] mb-6 text-center">{t("home.how_it_works")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
-              { icon: '🔍', title: 'Знайдіть', desc: 'Оберіть послугу, місто та мову майстра' },
-              { icon: '💬', title: 'Напишіть', desc: 'Зв\'яжіться напряму та домовтеся про візит' },
-              { icon: '✨', title: 'Насолоджуйтесь', desc: 'Отримайте якісний сервіс від професіонала' },
+              { icon: "🔍", title: t("home.step_find"), desc: t("home.step_find_desc") },
+              { icon: "💬", title: t("home.step_contact"), desc: t("home.step_contact_desc") },
+              { icon: "✨", title: t("home.step_enjoy"), desc: t("home.step_enjoy_desc") },
             ].map((step, i) => (
               <div key={i} className="relative bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 text-center card-hover">
                 <div className="text-3xl mb-3">{step.icon}</div>
