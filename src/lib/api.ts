@@ -286,61 +286,6 @@ class ApiClient {
   async health() {
     return this.request<any>("/api/health");
   }
-
-  // Bookings
-  async createBooking(data: { masterId: string; serviceId: string; date: string; time: string; notes?: string }) {
-    return this.request<any>("/api/bookings", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-  }
-
-  async getBookings() {
-    return this.request<any[]>("/api/bookings");
-  }
-
-  async getBooking(id: string) {
-    return this.request<any>(`/api/bookings/${id}`);
-  }
-
-  async updateBookingStatus(id: string, status: string) {
-    return this.request<any>(`/api/bookings/${id}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async createReview(bookingId: string, rating: number, text?: string) {
-    return this.request<any>(`/api/bookings/${bookingId}/review`, {
-      method: "POST",
-      body: JSON.stringify({ rating, text }),
-    });
-  }
-
-  // Master Dashboard
-  async getMasterDashboard() {
-    return this.request<any>("/api/master-dashboard/profile");
-  }
-
-  async getMasterStats() {
-    return this.request<any>("/api/master-dashboard/stats");
-  }
-
-  async getMasterAppointments() {
-    return this.request<any[]>("/api/master-dashboard/appointments");
-  }
-
-  // Admin
-  async getAdminMasters() {
-    return this.request<any[]>("/api/admin/masters");
-  }
-
-  async updateMasterStatus(id: string, status: string) {
-    return this.request<any>(`/api/admin/masters/${id}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    });
-  }
 }
 
 export const api = new ApiClient(API_BASE);
