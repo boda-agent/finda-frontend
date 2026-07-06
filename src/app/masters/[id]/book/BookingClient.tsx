@@ -12,7 +12,7 @@ interface Master {
   name: string;
   coverImage?: string;
   city?: { name: string; country?: { name: string; flagEmoji?: string } };
-  services?: { id: string; name: string; price: number; durationMin?: number }[];
+  services?: { id: string; service: { id: string; name: string; price: number; durationMin?: number; category?: { name: string } }; customPrice?: number; customDuration?: number }[];
 }
 
 interface Slot {
@@ -53,7 +53,11 @@ export default function BookingClient({ masterId }: { masterId: string }) {
       const data = await api.getMaster(masterId);
       setMaster(data);
       if (data.services?.length) {
-        setSelectedService(data.services[0].id);
+        // Check URL params for pre-selected service
+        const params = new URLSearchParams(window.location.search);
+        const svcParam = params.get('service');
+        const found = svcParam ? data.services.find((s: any) => s.service?.id === svcParam || s.id === svcParam) : null;
+        setSelectedService(found?.id || data.services[0].id);
       }
     } catch {
       setError("Майстра не знайдено");
@@ -87,7 +91,7 @@ export default function BookingClient({ masterId }: { masterId: string }) {
     try {
       await api.createBooking({
         masterId,
-        serviceId: selectedService,
+        serviceId: svc?.id || selectedService,
         date: selectedDate,
         startTime: selectedTime,
         notes: notes || undefined,
@@ -104,7 +108,10 @@ export default function BookingClient({ masterId }: { masterId: string }) {
   const today = new Date().toISOString().split("T")[0];
 
   // Get selected service details
-  const svc = master?.services?.find((s) => s.id === selectedService);
+  const svcWrapper = master?.services?.find((s) => s.id === selectedService);
+  const svc = svcWrapper?.service;
+  const svcPrice = svcWrapper?.customPrice || svc?.price;
+  const svcDuration = svcWrapper?.customDuration || svc?.durationMin;
 
   if (loading) {
     return (
@@ -178,11 +185,15 @@ export default function BookingClient({ masterId }: { masterId: string }) {
             1. Оберіть послугу
           </h3>
           <div className="space-y-2">
-            {master?.services?.map((svc) => (
+            {master?.services?.map((svcWrapper) => {
+              const s = svcWrapper.service;
+              const price = svcWrapper.customPrice || s.price;
+              const duration = svcWrapper.customDuration || s.durationMin;
+              return (
               <label
-                key={svc.id}
+                key={svcWrapper.id}
                 className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
-                  selectedService === svc.id
+                  selectedService === svcWrapper.id
                     ? "border-[var(--accent)] bg-[var(--accent-light)]"
                     : "border-[var(--border)] hover:border-[var(--accent)]"
                 }`}
@@ -191,27 +202,28 @@ export default function BookingClient({ masterId }: { masterId: string }) {
                   <input
                     type="radio"
                     name="service"
-                    value={svc.id}
-                    checked={selectedService === svc.id}
-                    onChange={() => setSelectedService(svc.id)}
+                    value={svcWrapper.id}
+                    checked={selectedService === svcWrapper.id}
+                    onChange={() => setSelectedService(svcWrapper.id)}
                     className="accent-[var(--accent)]"
                   />
                   <div>
                     <div className="text-sm font-semibold text-[var(--text)]">
-                      {svc.name}
+                      {s.name}
                     </div>
-                    {svc.durationMin && (
+                    {duration && (
                       <div className="text-xs text-[var(--text-tertiary)]">
-                        ⏱ {svc.durationMin} хв
+                        ⏱ {duration} хв
                       </div>
                     )}
                   </div>
                 </div>
                 <span className="text-sm font-bold text-[var(--accent)]">
-                  {svc.price}₴
+                  {price}₴
                 </span>
               </label>
-            ))}
+              );
+            })}
             {(!master?.services || master.services.length === 0) && (
               <p className="text-sm text-[var(--text-tertiary)] text-center py-4">
                 Послуги не додані
@@ -311,14 +323,14 @@ export default function BookingClient({ masterId }: { masterId: string }) {
                 <span className="text-[var(--text-secondary)]">Час</span>
                 <span className="font-semibold text-[var(--text)]">
                   {selectedTime}
-                  {svc?.durationMin && ` (${svc.durationMin} хв)`}
+                  {svcDuration && ` (${svcDuration} хв)`}
                 </span>
               </div>
-              {svc?.price && (
+              {svcPrice && (
                 <div className="flex justify-between pt-2 border-t border-[var(--border)]">
                   <span className="font-bold text-[var(--text)]">Ціна</span>
                   <span className="font-bold text-[var(--accent)]">
-                    {svc.price}₴
+                    {svcPrice}₴
                   </span>
                 </div>
               )}

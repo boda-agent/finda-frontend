@@ -14,7 +14,7 @@ interface Master {
   workingHours?: { dayOfWeek: number; startTime: string; endTime: string; isActive?: boolean }[];
   languages?: { language: { name: string; code: string } }[];
   reviews?: { id: string; rating: number; text?: string; createdAt: string; user: { name: string } }[];
-  services?: { id: string; name: string; price: number; durationMin?: number }[];
+  services?: { id: string; service: { id: string; name: string; price: number; durationMin?: number; category?: { name: string } }; customPrice?: number; customDuration?: number }[];
 }
 
 const DAYS = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -139,15 +139,31 @@ export default function MasterProfileClient({ id }: { id: string }) {
         {/* Tab Content */}
         {activeTab === 'services' && (
           <div className="space-y-3">
-            {master.services?.length ? master.services.map(svc => (
-              <div key={svc.id} className="flex items-center justify-between bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4 hover:border-[var(--accent)] transition-colors">
-                <div>
-                  <h4 className="font-semibold text-sm text-[var(--text)]">{svc.name}</h4>
-                  {svc.durationMin && <p className="text-xs text-[var(--text-tertiary)] mt-0.5">⏱ {svc.durationMin} хв</p>}
+            {master.services?.length ? master.services.map(svc => {
+              const s = svc.service;
+              const price = svc.customPrice || s.price;
+              const duration = svc.customDuration || s.durationMin;
+              return (
+                <div key={svc.id} className="flex items-center justify-between bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4 hover:border-[var(--accent)] transition-colors">
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-sm text-[var(--text)]">{s.name}</h4>
+                    <div className="flex items-center gap-3 mt-1">
+                      {s.category && <span className="text-[10px] font-medium text-[var(--text-tertiary)]">{s.category.name}</span>}
+                      {duration && <span className="text-xs text-[var(--text-tertiary)]">⏱ {duration} хв</span>}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg font-bold text-[var(--accent)]">{price}₴</span>
+                    <Link
+                      href={`/masters/${master.id}/book?service=${s.id}`}
+                      className="bg-[var(--accent)] text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-[var(--accent-dark)] transition-all"
+                    >
+                      Записатись
+                    </Link>
+                  </div>
                 </div>
-                <span className="text-lg font-bold text-[var(--accent)]">{svc.price}₴</span>
-              </div>
-            )) : <p className="text-center text-sm text-[var(--text-tertiary)] py-8">Послуги не додані</p>}
+              );
+            }) : <p className="text-center text-sm text-[var(--text-tertiary)] py-8">Послуги не додані</p>}
           </div>
         )}
 
