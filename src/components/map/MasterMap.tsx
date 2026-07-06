@@ -235,13 +235,15 @@ export default function MasterMap({ onSelectMaster, className }: MapProps) {
 
     el.addEventListener("click", (e) => {
       e.stopPropagation();
+      e.preventDefault();
       showMasterPopup(master);
       onSelectMaster?.(master);
     });
 
-    new mapboxgl.Marker({ element: el })
+    const marker = new mapboxgl.Marker({ element: el })
       .setLngLat([master.lng!, master.lat!])
       .addTo(map.current!);
+    markersRef.current.push(marker);
   };
 
   // Show mini-profile popup
