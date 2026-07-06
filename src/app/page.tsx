@@ -12,6 +12,20 @@ export default function HomePage() {
   const [city, setCity] = useState("");
   const [service, setService] = useState("");
 
+  const cities = [
+    "Київ", "Львів", "Одеса", "Варшава", "Краків", "Вроцлав", "Ґданськ",
+    "Берлін", "Мюнхен", "Гамбург", "Париж", "Ліон", "Марсель",
+    "Мадрид", "Барселона", "Валенсія", "Рим", "Мілан",
+    "Лондон", "Манчестер", "Нью-Йорк", "Лос-Анджелес",
+    "Прага", "Брно", "Відень", "Стамбул", "Анталія", "Дубай",
+  ];
+
+  const services = [
+    "Манікюр", "Педикюр", "Стрижка", "Фарбування", "Укладка",
+    "Балаяж", "Макіяж", "Брови", "Вії", "Масаж", "Чистка обличчя",
+    "Пілінг", "Татуювання", "Пірсинг", "Нарощування нігтів",
+  ];
+
   function handleSearch() {
     const params = new URLSearchParams();
     if (city) params.set("city", city);
@@ -49,27 +63,27 @@ export default function HomePage() {
               >
                 <div className="flex-1 flex items-center gap-2 px-4 py-3.5 border-b sm:border-b-0 sm:border-r border-[var(--border)]">
                   <span className="text-[var(--text-tertiary)]">📍</span>
-                  <input
-                    type="text"
-                    placeholder="Місто"
-                    aria-label="Місто"
+                  <select
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                    className="flex-1 bg-transparent text-sm text-[var(--text)] outline-none placeholder:text-[var(--text-tertiary)]"
-                  />
+                    aria-label="Місто"
+                    className="flex-1 bg-transparent text-sm text-[var(--text)] outline-none appearance-none cursor-pointer"
+                  >
+                    <option value="">Місто</option>
+                    {cities.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
                 </div>
                 <div className="flex-1 flex items-center gap-2 px-4 py-3.5">
                   <span className="text-[var(--text-tertiary)]">✂️</span>
-                  <input
-                    type="text"
-                    placeholder="Стрижка, манікюр…"
-                    aria-label="Послуга"
+                  <select
                     value={service}
                     onChange={(e) => setService(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                    className="flex-1 bg-transparent text-sm text-[var(--text)] outline-none placeholder:text-[var(--text-tertiary)]"
-                  />
+                    aria-label="Послуга"
+                    className="flex-1 bg-transparent text-sm text-[var(--text)] outline-none appearance-none cursor-pointer"
+                  >
+                    <option value="">Послуга</option>
+                    {services.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
                 </div>
                 <button
                   onClick={handleSearch}

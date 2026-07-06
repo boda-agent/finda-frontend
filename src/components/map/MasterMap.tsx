@@ -215,23 +215,27 @@ export default function MasterMap({ onSelectMaster, className }: MapProps) {
     const el = document.createElement("div");
     el.className = "master-marker";
     el.style.cssText = `
-      width: 32px; height: 40px; cursor: pointer;
-      background: #22c55e; border-radius: 50% 50% 50% 0;
-      transform: rotate(-45deg); border: 2px solid white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 0.2s;
+      width: 28px; height: 28px; cursor: pointer;
+      background: #22c55e; border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: transform 0.15s ease;
+      position: relative;
     `;
 
-    const inner = document.createElement("div");
-    inner.style.cssText = `
-      width: 12px; height: 12px; background: white; border-radius: 50%;
-      transform: rotate(45deg);
+    // Pin tail
+    const tail = document.createElement("div");
+    tail.style.cssText = `
+      position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid #22c55e;
     `;
-    el.appendChild(inner);
+    el.appendChild(tail);
 
-    el.addEventListener("mouseenter", () => { el.style.transform = "rotate(-45deg) scale(1.2)"; });
-    el.addEventListener("mouseleave", () => { el.style.transform = "rotate(-45deg) scale(1)"; });
+    el.addEventListener("mouseenter", () => { el.style.transform = "scale(1.2)"; });
+    el.addEventListener("mouseleave", () => { el.style.transform = "scale(1)"; });
 
     el.addEventListener("click", (e) => {
       e.stopPropagation();
