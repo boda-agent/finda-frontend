@@ -105,7 +105,7 @@ export default function FavoritesPage() {
                 >
                   {/* Avatar */}
                   <Link href={`/masters/${master.id}`} className="shrink-0">
-                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-violet-200 to-pink-200 overflow-hidden">
+                    <div className="w-16 h-16 rounded-xl bg-[var(--accent-light)] overflow-hidden">
                       {master.coverImage ? (
                         <img src={master.coverImage} alt={master.name} className="w-full h-full object-cover" />
                       ) : (

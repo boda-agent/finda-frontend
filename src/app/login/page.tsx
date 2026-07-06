@@ -33,7 +33,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-violet-50 via-white to-pink-50">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-[var(--bg)]">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -87,7 +87,7 @@ export default function LoginPage() {
               </div>
             )}
             <button type="submit" disabled={loading}
-              className="w-full bg-gradient-to-r from-violet-600 to-pink-600 text-white font-semibold rounded-xl px-4 py-3.5 text-sm hover:opacity-90 transition-all disabled:opacity-50 shadow-lg shadow-purple-500/20 mt-2">
+              className="w-full bg-[var(--accent)] text-white font-semibold rounded-xl px-4 py-3.5 text-sm hover:bg-[var(--accent-dark)] transition-all disabled:opacity-50 mt-2">
               {loading ? "Завантаження..." : mode === "login" ? "Увійти" : "Зареєструватись"}
             </button>
           </form>

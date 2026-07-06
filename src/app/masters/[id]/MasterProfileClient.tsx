@@ -64,7 +64,7 @@ export default function MasterProfileClient({ id }: { id: string }) {
 
         {/* Cover + Profile */}
         <div className="relative rounded-2xl overflow-hidden mb-6">
-          <div className="h-48 md:h-64 bg-gradient-to-br from-violet-200 to-pink-200">
+          <div className="h-48 md:h-64 bg-[var(--accent-light)]">
             {master.coverImage && (
               <img src={master.coverImage} alt={master.name} className="w-full h-full object-cover" />
             )}
@@ -207,7 +207,7 @@ export default function MasterProfileClient({ id }: { id: string }) {
         <div className="mt-8 sticky bottom-20 md:bottom-4 z-10">
           <Link
             href={`/masters/${master.id}/book`}
-            className="block w-full bg-gradient-to-r from-violet-600 to-pink-600 text-white font-bold text-sm py-4 rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all active:scale-[0.98] text-center"
+            className="block w-full bg-[var(--accent)] text-white font-bold text-sm py-4 rounded-xl hover:bg-[var(--accent-dark)] transition-all active:scale-[0.98] text-center"
           >
             ✨ Записатися до {master.name.split(' ')[0]}
           </Link>

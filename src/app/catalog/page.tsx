@@ -120,7 +120,7 @@ export default function CatalogPage() {
                 <Link key={master.id} href={`/masters/${master.id}`}
                   className="group bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border)] card-hover">
                   {/* Cover */}
-                  <div className="relative h-48 bg-gradient-to-br from-violet-100 to-pink-100 overflow-hidden">
+                  <div className="relative h-48 bg-[var(--accent-light)] overflow-hidden">
                     {master.coverImage ? (
                       <img src={master.coverImage} alt={master.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (

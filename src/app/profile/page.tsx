@@ -76,7 +76,7 @@ export default function ProfilePage() {
         {/* Avatar + Info */}
         <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 mb-4">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-2xl font-bold text-white">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--accent)] flex items-center justify-center text-2xl font-bold text-white">
               {user.name?.charAt(0) || user.email?.charAt(0) || "?"}
             </div>
             <div>

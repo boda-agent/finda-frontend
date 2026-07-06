@@ -136,7 +136,7 @@ export default function BookingClient({ masterId }: { masterId: string }) {
             </Link>
             <Link
               href="/catalog"
-              className="bg-gradient-to-r from-violet-600 to-pink-600 text-white font-semibold text-sm px-6 py-3 rounded-xl"
+              className="bg-[var(--accent)] text-white font-semibold text-sm px-6 py-3 rounded-xl hover:bg-[var(--accent-dark)] transition-all"
             >
               🔍 Знайти ще
             </Link>
@@ -329,7 +329,7 @@ export default function BookingClient({ masterId }: { masterId: string }) {
         <button
           onClick={handleSubmit}
           disabled={!selectedService || !selectedDate || !selectedTime || submitting}
-          className="w-full bg-gradient-to-r from-violet-600 to-pink-600 text-white font-bold text-sm py-4 rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-[var(--accent)] text-white font-bold text-sm py-4 rounded-xl hover:bg-[var(--accent-dark)] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting ? "⏳ Бронюємо..." : "✅ Підтвердити запис"}
         </button>

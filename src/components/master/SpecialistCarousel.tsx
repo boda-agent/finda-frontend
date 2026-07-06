@@ -35,7 +35,7 @@ export default function SpecialistCarousel() {
         return (
           <Link key={master.id} href={`/masters/${master.id}`}
             className="group min-w-[260px] bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] overflow-hidden card-hover flex-shrink-0">
-            <div className="relative h-40 bg-gradient-to-br from-violet-100 to-pink-100 overflow-hidden">
+            <div className="relative h-40 bg-[var(--accent-light)] overflow-hidden">
               {master.coverImage ? (
                 <img src={master.coverImage} alt={master.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               ) : <div className="w-full h-full flex items-center justify-center text-3xl opacity-30">👩</div>}

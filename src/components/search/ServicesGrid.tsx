@@ -3,14 +3,14 @@
 import Link from "next/link";
 
 const CATEGORIES = [
-  { slug: 'manicure', icon: '💅', label: 'Манікюр', color: 'from-pink-500 to-rose-500' },
+  { slug: 'manicure', icon: '💅', label: 'Манікюр', color: 'from-green-500 to-emerald-500' },
   { slug: 'hair', icon: '💇', label: 'Волосся', color: 'from-amber-500 to-orange-500' },
-  { slug: 'lashes', icon: '👁️', label: 'Вії', color: 'from-violet-500 to-purple-500' },
-  { slug: 'makeup', icon: '💄', label: 'Макіяж', color: 'from-red-500 to-pink-500' },
+  { slug: 'lashes', icon: '👁️', label: 'Вії', color: 'from-green-500 to-teal-500' },
+  { slug: 'makeup', icon: '💄', label: 'Макіяж', color: 'from-green-500 to-lime-500' },
   { slug: 'massage', icon: '💆', label: 'Масаж', color: 'from-teal-500 to-cyan-500' },
   { slug: 'skincare', icon: '🧴', label: 'Шкіра', color: 'from-emerald-500 to-green-500' },
   { slug: 'brows', icon: '✨', label: 'Брови', color: 'from-indigo-500 to-blue-500' },
-  { slug: 'spa', icon: '🧖', label: 'Спа', color: 'from-fuchsia-500 to-pink-500' },
+  { slug: 'spa', icon: '🧖', label: 'Спа', color: 'from-green-500 to-cyan-500' },
 ];
 
 export default function ServicesGrid() {
