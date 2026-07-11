@@ -186,20 +186,23 @@ export default function MasterMap({ onSelectMaster, className }: MapProps) {
     );
   };
 
-  // Add cluster marker (green circle with count)
+  // Add cluster marker (purple circle with count)
   const addClusterMarker = (cluster: { count: number; lat: number; lng: number; masters: Master[] }) => {
     const el = document.createElement("div");
     el.className = "cluster-marker";
-    el.style.cssText = `
-      width: 40px; height: 40px; border-radius: 50%;
-      background: #22c55e; color: white; font-weight: 700; font-size: 14px;
+    el.style.cssText = `width: 40px; height: 40px; cursor: pointer;`;
+    const inner = document.createElement("div");
+    inner.style.cssText = `
+      width: 100%; height: 100%; border-radius: 50%;
+      background: #8b5cf6; color: white; font-weight: 700; font-size: 14px;
       display: flex; align-items: center; justify-content: center;
       border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      cursor: pointer; transition: transform 0.2s;
+      transition: transform 0.2s;
     `;
-    el.textContent = String(cluster.count);
-    el.addEventListener("mouseenter", () => { el.style.transform = "scale(1.15)"; });
-    el.addEventListener("mouseleave", () => { el.style.transform = "scale(1)"; });
+    inner.textContent = String(cluster.count);
+    el.appendChild(inner);
+    el.addEventListener("mouseenter", () => { inner.style.transform = "scale(1.15)"; });
+    el.addEventListener("mouseleave", () => { inner.style.transform = "scale(1)"; });
 
     el.addEventListener("click", () => {
       map.current?.flyTo({ center: [cluster.lng, cluster.lat], zoom: 13, duration: 500 });
@@ -210,13 +213,17 @@ export default function MasterMap({ onSelectMaster, className }: MapProps) {
       .addTo(map.current!);
   };
 
-  // Add single master marker (green pin)
+  // Add single master marker (purple pin)
   const addMasterMarker = (master: Master) => {
     const el = document.createElement("div");
     el.className = "master-marker";
-    el.style.cssText = `
-      width: 28px; height: 28px; cursor: pointer;
-      background: #22c55e; border-radius: 50%;
+    el.style.cssText = `width: 28px; height: 28px; cursor: pointer;`;
+
+    // Inner wrapper — scale on hover without breaking Mapbox translate
+    const inner = document.createElement("div");
+    inner.style.cssText = `
+      width: 100%; height: 100%;
+      background: #8b5cf6; border-radius: 50%;
       border: 3px solid white;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       transition: transform 0.15s ease;
@@ -230,12 +237,13 @@ export default function MasterMap({ onSelectMaster, className }: MapProps) {
       width: 0; height: 0;
       border-left: 6px solid transparent;
       border-right: 6px solid transparent;
-      border-top: 8px solid #22c55e;
+      border-top: 8px solid #8b5cf6;
     `;
-    el.appendChild(tail);
+    inner.appendChild(tail);
+    el.appendChild(inner);
 
-    el.addEventListener("mouseenter", () => { el.style.transform = "scale(1.2)"; });
-    el.addEventListener("mouseleave", () => { el.style.transform = "scale(1)"; });
+    el.addEventListener("mouseenter", () => { inner.style.transform = "scale(1.2)"; });
+    el.addEventListener("mouseleave", () => { inner.style.transform = "scale(1)"; });
 
     el.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -263,7 +271,7 @@ export default function MasterMap({ onSelectMaster, className }: MapProps) {
     el.style.cssText = "padding: 12px; min-width: 200px; max-width: 260px;";
     el.innerHTML = `
       <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: #f0fdf4; overflow: hidden; flex-shrink: 0;">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: #ede9fe; overflow: hidden; flex-shrink: 0;">
           ${
             master.coverImage
               ? `<img src="${master.coverImage}" style="width: 100%; height: 100%; object-fit: cover;" />`
@@ -277,9 +285,9 @@ export default function MasterMap({ onSelectMaster, className }: MapProps) {
       </div>
       <div style="display: flex; gap: 12px; font-size: 11px; color: #64648c; margin-bottom: 8px;">
         <span>⭐ ${avgRating}</span>
-        ${master.isVerified ? '<span style="color: #22c55e;">✓ Перевірений</span>' : ""}
+        ${master.isVerified ? '<span style="color: #8b5cf6;">✓ Перевірений</span>' : ""}
       </div>
-      <a href="/masters/${master.id}" style="display: block; text-align: center; background: #22c55e; color: white; font-size: 12px; font-weight: 600; padding: 8px; border-radius: 8px; text-decoration: none;">
+      <a href="/masters/${master.id}" style="display: block; text-align: center; background: #8b5cf6; color: white; font-size: 12px; font-weight: 600; padding: 8px; border-radius: 8px; text-decoration: none;">
         Переглянути профіль
       </a>
     `;
